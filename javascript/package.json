@@ -1,0 +1,34 @@
+{
+  "name": "maxgpt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "maxgpt.js",
+  "scripts": {
+    "compile": "npx tsc;",
+    "test": "OPEN_API_KEY=$(grep OPEN_API_KEY .env | cut -d '=' -f2) nyc --cwd ./../ --report-dir=javascript/coverage --temp-dir=javascript/.nyc_output --reporter=lcov --reporter=text ava",
+    "test-no-remote": "nyc --cwd ./../ --report-dir=javascript/coverage --temp-dir=javascript/.nyc_output --reporter=lcov --reporter=text ava",
+    "report": "nyc report --reporter=html --exclude-node-modules=true"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "max-api-or-not": "^1.2.0",
+    "openai": "^3.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "ava": "^5.2.0",
+    "nyc": "^15.1.0",
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.2.0"
+  },
+  "ava": {
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register",
+      "tsconfig-paths/register"
+    ]
+  }
+}
