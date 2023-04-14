@@ -5389,3 +5389,5 @@ javascript/coverage/lcov-report/prettify.js
 javascript/coverage/lcov-report/sort-arrow-sprite.png
 javascript/coverage/lcov-report/sorter.js
 javascript/.env
+javascript/.nyc_output
+.maxGPT
