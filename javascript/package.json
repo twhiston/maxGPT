@@ -12,7 +12,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.0.3",
     "max-api-or-not": "^1.2.0",
+    "node-cache": "^5.1.2",
     "openai": "^3.2.1"
   },
   "devDependencies": {

@@ -5391,3 +5391,5 @@ javascript/coverage/lcov-report/sorter.js
 javascript/.env
 javascript/.nyc_output
 .maxGPT
+.env
+javascript/node_modules

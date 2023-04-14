@@ -11,6 +11,7 @@ import * as path from 'path';
 test('ask function failure on missing API key', async t => {
   const maxGPT = new MaxGPT();
   const question = 'What is the difference between global and local variables in JavaScript?';
+  maxGPT.API_KEY = ""
   try {
     await maxGPT.ask(question);
     t.fail('ask function should throw an error when API key is not set');
