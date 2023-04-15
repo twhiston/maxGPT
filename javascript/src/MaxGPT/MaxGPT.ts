@@ -1,35 +1,44 @@
 import { Configuration, OpenAIApi } from 'openai';
 import * as fs from 'fs';
 import * as path from 'path';
-import NodeCache = require('node-cache');
+import { OpenAIChatCache } from '../OpenAIChatCache/OpenAIChatCache';
+import { InMemoryCache } from '../OpenAIChatCache/InMemoryCache';
+import { maxPathHelper } from '../helpers/helpers';
 
 export default class MaxGPT {
 
     private _API_KEY: string;
     private config: Configuration
-    private readonly systemPrompt: string = `Generate JavaScript code to create a Max MSP patch using this.patcher, following these guidelines:
-    Use JavaScript 1.6 (ES3) syntax and functions, or provide polyfills when needed for compatibility.
-    Remember that the apply method in this.patcher iterates through Max objects, applying a function to each object.
-    Use the .set(value) method to set comment or message object data after creating them with newdefault.
-    Place the generated content inside a subpatcher with a unique timestamp in its name.
-    Call .subpatcher() on the created subpatcher object and use the returned value for creating new MaxObjs.
-    Ensure the generated patches are clear, well-organized, and easy to read, with sufficient spacing between elements.
-    Invoke the main function at the end of the JavaScript code to generate the Max MSP patch.
-    Format the returned code using Markdown code blocks, specifying the language as JavaScript.
-    Focus solely on providing JavaScript code for Max MSP and avoid explanations, small talk, or pleasantries.`
+    private readonly systemPrompt: string = `You are an expert at generating max map patches through their javascript api, using this.patcher. You always keep the following rules in mind:
+    1. You know that max msp uses javascript 1.6 and is only es3 compatible so you only use old functions or provide polyfills when needed to write the best quality code. 
+    2. You understand that the apply method in this.patcher applies a function to each max object in the patch with the object passed in. 
+    3. You know that the .message method does not exist on MaxObj  
+    4. You know that you cannot set comment or message objects data in newdefault, you need to call .set(value) on them after instead. 
+    5. You always present your solutions in new subpatchers with a timestamp in their name. 
+    6. You know that when you create a subpatcher you need to call .subpatcher() and use the return value to create new MaxObjs
+    6. You are scrupulous about the patches you generate from javascript being clear and easy to read, with ample spacing between the elements. 
+    7. If you do not generate code where you call the function to run it directly at the end of a script you always include a bang function which runs the code or demonstrates it with example settings and you connect a [button] to the js object for the user to press.
+    8. You only return javascript code and you mark it as such by using markdown code blocks specifying the language
+    9. YOU DO NOT EXPLAIN YOUR WORK OR ENGAGE IN SMALL TALK OR PLEASANTRIES. If specifically asked you will explain something but otherwise you only return javascript.`
     private _MODEL: string = "gpt-4"
     private FOLDER_SUFFIX = ".maxGPT"
-    private _filepath: string = "./"
-    private msgCache = new NodeCache();
+    private _patchPath: string = "./"
+    msgCache: OpenAIChatCache = new InMemoryCache();
 
-    public set filepath(p: string) {
-        const prefix = "Macintosh HD:";
-        if (p.startsWith(prefix)) {
-            p = p.substring(prefix.length);
-        }
-        this._filepath = p
+    //Set the max msp patch path. This is called by the maxpat when the script starts.
+    //It will reload the environment because setting this path is also an indication
+    //that there might be a .env file added to the max patch folder
+    //This is the recommended way to set your OPEN_AI_KEY
+    public set patchpath(p: string) {
+        //some handling for how max likes to deal with mac paths vs js
+        p = maxPathHelper(p)
+        this._patchPath = p
+        this.loadEnvironment()
+    }
+
+    public loadEnvironment() {
         // Load the environment variables and store the result in a variable
-        const dotenvResult = require('dotenv').config({ path: path.join(p, ".env") });
+        const dotenvResult = require('dotenv').config({ path: path.join(this._patchPath, ".env") });
         // Check if the dotenv configuration is successful
         if (dotenvResult.error) {
             console.error('Error loading .env file:', dotenvResult.error);
@@ -37,14 +46,16 @@ export default class MaxGPT {
             // Log the path to the .env file
             console.log('Path to .env file:', dotenvResult.parsed['DOTENV_CONFIG_PATH']);
         }
+        //If the key is already set and there is not one in the env keep existing
         this.API_KEY = process.env.OPEN_AI_KEY || this._API_KEY
     }
 
-    public get filepath() {
-        return this._filepath
+    public get patchpath() {
+        return this._patchPath
     }
 
     constructor() {
+        //If this is running outside of max you might just have a key in your env anyway
         this.API_KEY = process.env.OPEN_AI_KEY || ""
     }
 
@@ -68,7 +79,6 @@ export default class MaxGPT {
         let lastIndex = 0;
         let newText = '';
 
-
         while ((match = regex.exec(input)) !== null) {
             codeBlocks.push(match[1].trim());
             newText += input.slice(lastIndex, match.index);
@@ -81,10 +91,10 @@ export default class MaxGPT {
 
     }
 
-    saveJS(content: string[], filePath: string): string[] {
+    saveJS(content: string[], patchPath: string): string[] {
         const fileNames: string[] = [];
-        if (!fs.existsSync(filePath)) {
-            fs.mkdirSync(filePath, { recursive: true });
+        if (!fs.existsSync(patchPath)) {
+            fs.mkdirSync(patchPath, { recursive: true });
         }
 
         let ts = Date.now();
@@ -92,7 +102,7 @@ export default class MaxGPT {
 
         for (const block of content) {
             const fileName = `${ts}_${blockId++}.js`;
-            const fullPath = path.join(filePath, fileName);
+            const fullPath = path.join(patchPath, fileName);
 
             fs.writeFileSync(fullPath, block);
 
@@ -109,16 +119,13 @@ export default class MaxGPT {
         }
         //TODO: do we really need to do this each time?
         const openai = new OpenAIApi(this.config);
-        const cachekeys = this.msgCache.keys();
-        const messages = []
+
+        let messages = []
         messages.push({
             role: "system",
             content: this.systemPrompt
         })
-        for (const key of cachekeys) {
-            const msg = this.msgCache.get(key);
-            messages.push(msg);
-        }
+        messages.push(...this.msgCache.getCache());
         messages.push({
             role: "user",
             content: q,
@@ -130,18 +137,11 @@ export default class MaxGPT {
         return completion.then(data => {
             let d = data.data
             //add the message to the message history cache
-            const cachekeys = this.msgCache.keys();
-            if (cachekeys.length === 0) {
-                this.msgCache.set(0, d.choices[0]?.message)
-            } else {
-                let lastKey = cachekeys[cachekeys.length - 1];
-                this.msgCache.set(lastKey + 1, d.choices[0]?.message)
-            }
-
+            this.msgCache.addMsgToCache(d.choices[0]?.message)
             //get the js from the result so we can use it in a js patcher
             let results = this.separateJSfromText(d.choices[0]?.message?.content)
-            //write the js to disk and output an array of filepaths, and any text which the
-            const fullPath = path.join(this._filepath, this.FOLDER_SUFFIX);
+            //write the js to disk and output an array of patchPaths, and any text which the
+            const fullPath = path.join(this._patchPath, this.FOLDER_SUFFIX);
             const outfiles = this.saveJS(results.codeBlocks, fullPath);
             const output: [Array<string>, string] = [outfiles, results.text]
             return output;

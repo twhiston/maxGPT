@@ -5393,3 +5393,4 @@ javascript/.nyc_output
 .maxGPT
 .env
 javascript/node_modules
+javascript/coverage

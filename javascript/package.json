@@ -4,7 +4,7 @@
   "description": "",
   "main": "maxgpt.js",
   "scripts": {
-    "compile": "npx tsc;",
+    "compile": "rm -rf ./dist && npx tsc;",
     "test": "OPEN_AI_KEY=$(grep OPEN_AI_KEY .env | cut -d '=' -f2) nyc --cwd ./../ --report-dir=javascript/coverage --temp-dir=javascript/.nyc_output --reporter=lcov --reporter=text ava",
     "test-no-remote": "nyc --cwd ./../ --report-dir=javascript/coverage --temp-dir=javascript/.nyc_output --reporter=lcov --reporter=text ava",
     "report": "nyc report --reporter=html --exclude-node-modules=true"

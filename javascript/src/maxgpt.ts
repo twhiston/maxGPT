@@ -10,8 +10,18 @@ maxAPI.addHandler('api-key', async (key: string) => {
 });
 
 maxAPI.addHandler('patch-path', async (key: string) => {
-    mgpt.filepath = key.toString();
-    maxAPI.post("Set filepath to", mgpt.filepath)
+    mgpt.patchpath = key.toString();
+    maxAPI.post("Set filepath to", mgpt.patchpath)
+});
+
+maxAPI.addHandler('save-cache', async (location: string) => {
+    mgpt.msgCache.writeToDisk(location.toString());
+    maxAPI.post("Saved cache to", location.toString())
+});
+
+maxAPI.addHandler('load-cache', async (location: string) => {
+    mgpt.msgCache.readFromDisk(location.toString());
+    maxAPI.post("Loaded cache from", location.toString())
 });
 
 maxAPI.addHandler('model', async (model: string) => {

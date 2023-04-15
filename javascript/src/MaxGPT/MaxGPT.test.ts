@@ -100,7 +100,7 @@ test.skip('ask function response', async t => {
 
   const maxGPT = new MaxGPT();
   maxGPT.API_KEY = apiKey || "";
-  maxGPT.filepath = "./.test/ask"
+  maxGPT.patchpath = "./.test/ask"
 
   const question = 'how does closebang differ from freebang?';
 
@@ -111,9 +111,9 @@ test.skip('ask function response', async t => {
     t.not(response[0].length, 0)
     t.is("string", typeof response[1])
     for (const fileName of response[0]) {
-      fs.unlinkSync(path.join(maxGPT.filepath, fileName));
+      fs.unlinkSync(path.join(maxGPT.patchpath, fileName));
     }
-    fs.rmdirSync(maxGPT.filepath);
+    fs.rmdirSync(maxGPT.patchpath);
 
   } catch (error) {
     t.fail(`Error occurred: ${error.message}`);
