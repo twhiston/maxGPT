@@ -1,11 +1,11 @@
-import { Configuration, OpenAIApi } from 'openai';
+import { ChatCompletionResponseMessage, Configuration, OpenAIApi } from 'openai';
 import * as fs from 'fs';
 import * as path from 'path';
 import { OpenAIChatCache } from '../OpenAIChatCache/OpenAIChatCache';
 import { InMemoryCache } from '../OpenAIChatCache/InMemoryCache';
 import { maxPathHelper } from '../helpers/helpers';
 
-export default class MaxGPT {
+export default class MaxGPTManager {
 
     private _API_KEY: string;
     private config: Configuration
@@ -126,17 +126,19 @@ export default class MaxGPT {
             content: this.systemPrompt
         })
         messages.push(...this.msgCache.getCache());
-        messages.push({
+        const userInput: ChatCompletionResponseMessage = {
             role: "user",
             content: q,
-        })
+        }
+        messages.push(userInput)
         const completion = openai.createChatCompletion({
             model: this._MODEL,
             messages: messages,
         });
         return completion.then(data => {
             let d = data.data
-            //add the message to the message history cache
+            //once we have a response we cache both the user input and the output
+            this.msgCache.addMsgToCache(userInput)
             this.msgCache.addMsgToCache(d.choices[0]?.message)
             //get the js from the result so we can use it in a js patcher
             let results = this.separateJSfromText(d.choices[0]?.message?.content)

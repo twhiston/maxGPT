@@ -1,5 +1,5 @@
 import test from 'ava';
-import MaxGPT from './MaxGPT';
+import MaxGPT from './MaxGPTManager';
 // No idea why these have errors, I imported the types. It runs though
 // so outta sight, outta mind for now!
 //@ts-ignore

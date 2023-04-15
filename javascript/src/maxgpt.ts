@@ -1,4 +1,4 @@
-import maxGPT from './MaxGPT/MaxGPT';
+import maxGPT from './MaxGPTManager/MaxGPTManager';
 import * as maxAPI from 'max-api-or-not';
 import * as path from 'path';
 
