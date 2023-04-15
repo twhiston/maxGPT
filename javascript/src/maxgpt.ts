@@ -24,6 +24,13 @@ maxAPI.addHandler('load-cache', async (location: string) => {
     maxAPI.post("Loaded cache from", location.toString())
 });
 
+maxAPI.addHandler('prompt', async (prompt: string) => {
+    if (prompt === undefined || prompt === null)
+        prompt = ""
+    mgpt.systemprompt = prompt.toString();
+    maxAPI.post("Prompt set to:", mgpt.systemprompt)
+});
+
 maxAPI.addHandler('model', async (model: string) => {
     try {
         mgpt.MODEL = model.toString()

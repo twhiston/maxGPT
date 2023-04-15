@@ -9,7 +9,8 @@ export default class MaxGPTManager {
 
     private _API_KEY: string;
     private config: Configuration
-    private readonly systemPrompt: string = `You are an expert at generating max map patches through their javascript api, using this.patcher. You always keep the following rules in mind:
+    private _systemPrompt: string
+    private readonly defaultPrompt: string = `You are an expert at generating max map patches through their javascript api, using this.patcher. You always keep the following rules in mind:
     1. You know that max msp uses javascript 1.6 and is only es3 compatible so you only use old functions or provide polyfills when needed to write the best quality code. 
     2. You understand that the apply method in this.patcher applies a function to each max object in the patch with the object passed in. 
     3. You know that the .message method does not exist on MaxObj  
@@ -20,10 +21,22 @@ export default class MaxGPTManager {
     7. If you do not generate code where you call the function to run it directly at the end of a script you always include a bang function which runs the code or demonstrates it with example settings and you connect a [button] to the js object for the user to press.
     8. You only return javascript code and you mark it as such by using markdown code blocks specifying the language
     9. YOU DO NOT EXPLAIN YOUR WORK OR ENGAGE IN SMALL TALK OR PLEASANTRIES. If specifically asked you will explain something but otherwise you only return javascript.`
+    public set systemprompt(p: string) {
+        this._systemPrompt = (p === "") ? this.defaultPrompt : p
+    }
+    public get systemprompt() {
+        return this._systemPrompt
+    }
     private _MODEL: string = "gpt-4"
     private FOLDER_SUFFIX = ".maxGPT"
     private _patchPath: string = "./"
     msgCache: OpenAIChatCache = new InMemoryCache();
+
+    constructor() {
+        //If this is running outside of max you might just have a key in your env anyway
+        this.API_KEY = process.env.OPEN_AI_KEY || ""
+        this.systemprompt = this.defaultPrompt
+    }
 
     //Set the max msp patch path. This is called by the maxpat when the script starts.
     //It will reload the environment because setting this path is also an indication
@@ -52,11 +65,6 @@ export default class MaxGPTManager {
 
     public get patchpath() {
         return this._patchPath
-    }
-
-    constructor() {
-        //If this is running outside of max you might just have a key in your env anyway
-        this.API_KEY = process.env.OPEN_AI_KEY || ""
     }
 
     public set API_KEY(v: string) {
@@ -123,7 +131,7 @@ export default class MaxGPTManager {
         let messages = []
         messages.push({
             role: "system",
-            content: this.systemPrompt
+            content: this.systemprompt
         })
         messages.push(...this.msgCache.getCache());
         const userInput: ChatCompletionResponseMessage = {

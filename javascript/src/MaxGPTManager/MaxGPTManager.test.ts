@@ -93,6 +93,25 @@ test.serial('saveJS saves JavaScript files', async (t) => {
 
 });
 
+test('Setter for systemprompt sets new system prompt', (t) => {
+  const maxGPTManager = new MaxGPT();
+  const newPrompt = 'New system prompt';
+  maxGPTManager.systemprompt = newPrompt;
+  t.is(maxGPTManager.systemprompt, newPrompt);
+});
+
+
+test('Setter for systemprompt resets system prompt to default when empty string', (t) => {
+  const maxGPTManager = new MaxGPT();
+  const emptyString = "";
+  const newPrompt = 'New system prompt';
+  maxGPTManager.systemprompt = newPrompt;
+  t.is(maxGPTManager.systemprompt, newPrompt);
+
+  maxGPTManager.systemprompt = emptyString;
+  t.is(maxGPTManager.systemprompt, maxGPTManager["defaultPrompt"]);
+});
+
 //Skipping this for now as it's long to run
 test.skip('ask function response', async t => {
   //@ts-ignore

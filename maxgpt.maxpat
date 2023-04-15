@@ -687,11 +687,11 @@
 				"box" : 				{
 					"id" : "obj-18",
 					"maxclass" : "newobj",
-					"numinlets" : 7,
-					"numoutlets" : 7,
-					"outlettype" : [ "", "", "", "", "", "", "" ],
-					"patching_rect" : [ 12.0, 81.0, 354.0, 22.0 ],
-					"text" : "routepass api-key patch-path models save-cache load-cache ask"
+					"numinlets" : 8,
+					"numoutlets" : 8,
+					"outlettype" : [ "", "", "", "", "", "", "", "" ],
+					"patching_rect" : [ 12.0, 81.0, 395.0, 22.0 ],
+					"text" : "routepass api-key patch-path models save-cache load-cache ask prompt"
 				}
 
 			}
@@ -818,7 +818,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 38.0, 610.0, 263.0, 49.0 ],
-					"text" : "code \"/Users/twhiston/Documents/Max 8/Library/maxGPT/.maxGPT/1681575657969_0.js\""
+					"text" : "code \"/Users/twhiston/Documents/Max 8/Library/maxGPT/.maxGPT/1681576900290_0.js\""
 				}
 
 			}
@@ -1049,6 +1049,8 @@
 					"saved_object_attributes" : 					{
 						"autostart" : 1,
 						"defer" : 0,
+						"node_bin_path" : "",
+						"npm_bin_path" : "",
 						"options" : [ "--inspect" ],
 						"watch" : 0
 					}
@@ -1127,6 +1129,13 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-10", 0 ],
+					"source" : [ "obj-18", 6 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-10", 0 ],
 					"source" : [ "obj-18", 5 ]
 				}
 
@@ -1169,7 +1178,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-91", 0 ],
-					"source" : [ "obj-18", 6 ]
+					"source" : [ "obj-18", 7 ]
 				}
 
 			}
