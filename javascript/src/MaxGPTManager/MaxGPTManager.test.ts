@@ -71,6 +71,57 @@ test('set MODEL', t => {
   }, { instanceOf: Error, message: 'Model must be gpt-4 or gpt-3.5-turbo' });
 });
 
+test('Setting and getting temperature works correctly', t => {
+  const manager = new MaxGPT();
+  manager.temperature = 1.0;
+  t.is(manager.temperature, 1.0);
+
+  t.throws(() => {
+    manager.temperature = 2.1;
+  }, { instanceOf: Error, message: 'temperature must be between 0.0 and 2.0' });
+});
+
+test('Setting and getting patchpath works correctly', t => {
+  const manager = new MaxGPT();
+  manager.patchpath = 'new/patch/path';
+  const transformedPath = manager.patchpath;
+  t.is(transformedPath, 'new/patch/path');
+});
+
+test('Setting and getting systemprompt works correctly', t => {
+  const manager = new MaxGPT();
+  manager.systemprompt = '';
+  t.not(manager.systemprompt, '');
+
+  const customPrompt = 'custom prompt';
+  manager.systemprompt = customPrompt;
+  t.is(manager.systemprompt, customPrompt);
+});
+
+//skipped because apikey is not currently public and i don't see any
+//reason to make it so, so we can't actually validate this.
+test.skip('Checking loadEnvironment', async t => {
+  const manager = new MaxGPT();
+  manager.patchpath = './';
+  manager.API_KEY = 'testKey';
+  manager.loadEnvironment();
+
+  const expectedKey = process.env.OPEN_AI_KEY || 'testKey';
+  t.is(manager.API_KEY, expectedKey);
+});
+
+test('Model setting and error handling', t => {
+  const manager = new MaxGPT();
+  manager.MODEL = 'gpt-4';
+  t.notThrows(() => {
+    manager.MODEL = 'gpt-3.5-turbo';
+  });
+
+  t.throws(() => {
+    manager.MODEL = 'invalid-model';
+  }, { instanceOf: Error, message: 'Model must be gpt-4 or gpt-3.5-turbo' });
+});
+
 test.serial('saveJS saves JavaScript files', async (t) => {
   const content = ['console.log("Test Block 1");', 'console.log("Test Block 2");'];
   const filePath = './.test/save';
