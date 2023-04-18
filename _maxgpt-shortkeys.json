@@ -25,13 +25,6 @@
             ]
         },
         {
-            "id": "disable-editor-alt-D",
-            "asciiCode": 8706,
-            "functions": [
-                "return ['ignore_keys']"
-            ]
-        },
-        {
             "id": "alphahandler",
             "asciiCode": 127,
             "functions": [
