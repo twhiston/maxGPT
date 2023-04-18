@@ -31,6 +31,12 @@ maxAPI.addHandler('prompt', async (prompt: string) => {
     maxAPI.post("Prompt set to:", mgpt.systemprompt)
 });
 
+maxAPI.addHandler('temp', async (temp: number) => {
+    mgpt.temperature = temp;
+    maxAPI.post("Set temperature to ", mgpt.temperature)
+});
+
+
 maxAPI.addHandler('model', async (model: string) => {
     try {
         mgpt.MODEL = model.toString()
@@ -43,12 +49,12 @@ maxAPI.addHandler('model', async (model: string) => {
 // When node.script gets the symbol "text", the remainder will be passed to this function.
 // The "..." is the spread operator. All of the arguments to this function will go into args as an array.
 maxAPI.addHandler('ask', async (args) => {
-    maxAPI.outlet("text", "maxGPT asking question...")
+    maxAPI.outlet("text", "status", "maxGPT asking question...")
     mgpt.ask(args).then((result) => {
         for (const res of result[0]) {
             maxAPI.outlet("code", res)
         }
         if (result[1] !== '')
-            maxAPI.outlet("text", result[1])
+            maxAPI.outlet("text", "response", result[1])
     })
 });

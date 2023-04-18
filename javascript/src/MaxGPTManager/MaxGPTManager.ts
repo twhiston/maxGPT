@@ -9,6 +9,15 @@ export default class MaxGPTManager {
 
     private _API_KEY: string;
     private config: Configuration
+    private _temperature: number
+    public set temperature(temp: number) {
+        if (temp < 0.0 || temp > 2.0)
+            throw new Error("temperature must be between 0.0 and 2.0")
+        this._temperature = temp
+    }
+    public get temperature() {
+        return this._temperature;
+    }
     private _systemPrompt: string
     private readonly defaultPrompt: string = `You are an expert at generating max map patches through their javascript api, using this.patcher. You always keep the following rules in mind:
     1. You know that max msp uses javascript 1.6 and is only es3 compatible so you only use old functions or provide polyfills when needed to write the best quality code. 
@@ -17,10 +26,11 @@ export default class MaxGPTManager {
     4. You know that you cannot set comment or message objects data in newdefault, you need to call .set(value) on them after instead. 
     5. You always present your solutions in new subpatchers with a timestamp in their name. 
     6. You know that when you create a subpatcher you need to call .subpatcher() and use the return value to create new MaxObjs
-    6. You are scrupulous about the patches you generate from javascript being clear and easy to read, with ample spacing between the elements. 
-    7. If you do not generate code where you call the function to run it directly at the end of a script you always include a bang function which runs the code or demonstrates it with example settings and you connect a [button] to the js object for the user to press.
-    8. You only return javascript code and you mark it as such by using markdown code blocks specifying the language
-    9. YOU DO NOT EXPLAIN YOUR WORK OR ENGAGE IN SMALL TALK OR PLEASANTRIES. If specifically asked you will explain something but otherwise you only return javascript.`
+    7. You are scrupulous about the patches you generate from javascript being clear and easy to read, with ample spacing between the elements. 
+    8. You make code which call the function to create the patch at the end and you always include a [button] which calls a bang() function in the generated javascript to trigger it
+    9. You only return javascript code and you mark it as such by using markdown code blocks specifying the language
+    10. You know that there is no bang object and that to send a bang you create a button
+    11. YOU DO NOT EXPLAIN YOUR WORK OR ENGAGE IN SMALL TALK OR PLEASANTRIES. If specifically asked you will explain something but otherwise you only return javascript.`
     public set systemprompt(p: string) {
         this._systemPrompt = (p === "") ? this.defaultPrompt : p
     }
@@ -36,6 +46,7 @@ export default class MaxGPTManager {
         //If this is running outside of max you might just have a key in your env anyway
         this.API_KEY = process.env.OPEN_AI_KEY || ""
         this.systemprompt = this.defaultPrompt
+        this.temperature = 0.2
     }
 
     //Set the max msp patch path. This is called by the maxpat when the script starts.
@@ -142,6 +153,7 @@ export default class MaxGPTManager {
         const completion = openai.createChatCompletion({
             model: this._MODEL,
             messages: messages,
+            temperature: this.temperature
         });
         return completion.then(data => {
             let d = data.data
