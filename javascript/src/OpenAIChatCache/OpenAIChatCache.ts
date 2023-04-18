@@ -7,4 +7,5 @@ export interface OpenAIChatCache {
     getCache(): Array<ChatCompletionResponseMessage>
     writeToDisk(location: string)
     readFromDisk(location: string)
+    clear()
 }

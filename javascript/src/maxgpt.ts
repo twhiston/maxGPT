@@ -24,6 +24,11 @@ maxAPI.addHandler('load-cache', async (location: string) => {
     maxAPI.post("Loaded cache from", location.toString())
 });
 
+maxAPI.addHandler('clear-cache', async (location: string) => {
+    mgpt.msgCache.clear();
+    maxAPI.post("Cleared cache")
+});
+
 maxAPI.addHandler('prompt', async (prompt: string) => {
     if (prompt === undefined || prompt === null)
         prompt = ""

@@ -10,7 +10,9 @@ advisable to keep the line about returning code inside markdown code blocks.
 
 ## Requirements
 
-You must have `tw.gl.repl` installed
+* You must have `tw.gl.repl` installed
+* OpenAI Api Key
+* Preferably GPT4 Access
 
 ## How to use
 
@@ -70,6 +72,10 @@ Be aware context lengths are limited by OpenAI limits.
 ### load-cache
 
 reload a chat history into maxGPT.
+
+### clear-cache
+
+deletes all the data in the hot cache. Next message will be the start of a new conversation
 
 ### prompt
 

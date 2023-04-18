@@ -14,6 +14,10 @@ export class InMemoryCache implements OpenAIChatCache {
         this.msgCache = new NodeCache();
     }
 
+    clear() {
+        this.msgCache.flushAll()
+    }
+
     addMsgToCache(msg: ChatCompletionResponseMessage) {
         const cachekeys = this.msgCache.keys();
         if (cachekeys.length === 0) {
