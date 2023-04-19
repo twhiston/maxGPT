@@ -1,0 +1,37 @@
+---
+name: "tagged-release"
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  gh_tagged_release:
+      # Using a "label" to assign job to a specific hosted runner
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out our repository under "$GITHUB_WORKSPACE", so our job can access it
+      - name: 'Checkout repository'
+        uses: actions/checkout@v3
+
+      # Runs commands using the runners shell
+      - name: 'Run tests'
+        working-directory: ./javascript
+        run: npm install && npx nyc ava
+      
+      - name: 'compile'
+        working-directory: ./javascript
+        run: npm run compile
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          files: |
+            maxGPT.maxpat
+            README.md
+            _maxgpt-shortkeys.json
+            javascript/dist/*
+            javascript/maxjs
+        id: "automatic_releases"
