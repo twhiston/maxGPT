@@ -23,11 +23,11 @@ be printed into the repl window.
 
 ## How does it work?
 
-GPT4 cannot read or make compressed max patch format files, and max's
-uncompressed JSON format is too verbose for it's reply length limits. However it
-does have some grasp of using this.patcher in javascript to make max object.
-It's not exactly amazing at it though, so don't set your expectations too high.
-Perhaps a better prompt would help? You can give it a go!
+GPT4 cannot read or make compressed max patch format files. However it
+can create json for patches and it does have some grasp of using this.patcher
+in javascript to make max objects as well, though it's appreciably worse at the latter.
+Depending on the prompt used you can get it to output either. By default the system
+prompt gets it to output json as a maxpat.
 
 ## Commands
 
@@ -111,5 +111,8 @@ This is what is called by the repl when you hit option+enter
 
 ## TODO
 
-* Improve prompt
+* things which seperate content from text should take the same object it outputs as input and allow them,
+to be chained to you can filter out everything, but where to store filtered?
+* clearer message when api key is not set rather than script just crashing
+* dynamic resize of overlay text
 * auto prime chat-gpt when 3.5 is selected

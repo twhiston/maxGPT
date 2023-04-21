@@ -59,7 +59,9 @@ maxAPI.addHandler('ask', async (args) => {
         for (const res of result[0]) {
             maxAPI.outlet("code", res)
         }
-        if (result[1] !== '')
-            maxAPI.outlet("text", "response", result[1])
+        for (const res of result[1]) {
+            maxAPI.outlet("json", res)
+        }
+        maxAPI.outlet("text", "response", result[2])
     })
 });

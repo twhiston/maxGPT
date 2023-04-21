@@ -6,6 +6,7 @@ import MaxGPT from './MaxGPTManager';
 import * as fs from 'fs';
 //@ts-ignore
 import * as path from 'path';
+import { ProcessedText } from './MaxGPTManager';
 
 
 test('ask function failure on missing API key', async t => {
@@ -24,30 +25,60 @@ test('extractJavaScriptBlocksAndText', (t) => {
 
   const input = `
     Some text before the script
-    \`\`\`javascript
+\`\`\`javascript
     const x = 42;
-    \`\`\`
+\`\`\`
     Another piece of text between scripts
-    \`\`\`javascript
+\`\`\`javascript
     console.log('Hello, World!');
     console.log("i'm a bigger block");
-    \`\`\`
+\`\`\`
     Some more text at the end
   `;
 
   const expectedOutput = {
-    codeBlocks: [
+    extracted: [
       `const x = 42;`,
       `console.log('Hello, World!');\n    console.log("i'm a bigger block");`,
     ],
     text: `Some text before the script
-    
+
     Another piece of text between scripts
-    
+
     Some more text at the end`
   };
   const maxGPT = new MaxGPT();
   const result = maxGPT.separateJSfromText(input);
+  t.deepEqual(result, expectedOutput);
+});
+
+test('extractjsonBlocksAndText', (t) => {
+
+  const input = `
+    Some text before the script
+\`\`\`json
+    { 'value': 93 }
+\`\`\`
+    Another piece of text between scripts
+\`\`\`json
+    { 'life': 42, 'universe': 23, everything: '93'}
+\`\`\`
+    Some more text at the end
+  `;
+
+  const expectedOutput = {
+    extracted: [
+      `{ 'value': 93 }`,
+      `{ 'life': 42, 'universe': 23, everything: '93'}`,
+    ],
+    text: `Some text before the script
+
+    Another piece of text between scripts
+
+    Some more text at the end`
+  };
+  const maxGPT = new MaxGPT();
+  const result = maxGPT.separateJSONfromText(input);
   t.deepEqual(result, expectedOutput);
 });
 
@@ -127,7 +158,7 @@ test.serial('saveJS saves JavaScript files', async (t) => {
   const filePath = './.test/save';
 
   const maxGPT = new MaxGPT();
-  const fileNames = maxGPT.saveJS(content, filePath);
+  const fileNames = maxGPT.save(content, filePath, "js");
 
   for (const fileName of fileNames) {
     t.true(fs.existsSync(fileName), `File ${fileName} should exist`);
@@ -177,7 +208,7 @@ test.skip('ask function response', async t => {
   try {
     const response = await maxGPT.ask(question);
     t.truthy(response, 'Response should not be empty or undefined');
-    t.is(response.length, 2)
+    t.is(response.length, 3)
     t.not(response[0].length, 0)
     t.is("string", typeof response[1])
     for (const fileName of response[0]) {
