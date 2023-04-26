@@ -8,6 +8,10 @@ which this code can parse, 3.5 needs you to send this manually as the first
 message. If you experiment with changing the system prompt it is highly
 advisable to keep the line about returning code inside markdown code blocks.
 
+Note also that this is SLOW. We can't parse anything until the response is complete
+as we are parsing either max patch json or javascript which we need to execute, so
+it's not exactly a snappy experience!
+
 ## Requirements
 
 * You must have `tw.gl.repl` installed
@@ -33,7 +37,7 @@ prompt gets it to output json as a maxpat.
 
 All of the following commands can be called from the [maxGPT] inlet. However in
 normal operation, once you have created a .env file, you don't need to think
-about these. If you need to advance in a more advanced way however there are a
+about these. However if you need to use maxGPT in a more advanced way there are a
 few useful things you can do
 
 ### api-key
@@ -43,9 +47,11 @@ gpt4.
 
 The easiest way to pass your api-key to maxGPT is to send the
 `api-key my-api-key-value` to the inlet. However it's cool to just be able to
-make a maxGPT object and go, so the recommended method is creating a `.env` file
-in the root of the maxgpt project folder (the folder which has this README and
-maxgpt.maxpat in). inside your `.env` file add the following
+make a maxGPT object in any patch and go, so the recommended method is creating
+a `.env` file in the root of the maxgpt project folder (the folder which has
+this README and maxgpt.maxpat in), this should be `Max 8/Packages/maxGPT`.
+Inside your `.env` file add the following, replacing `my-api-key-value` with
+your API key value.
 
 ```env
 OPEN_AI_KEY=my-api-key-value
@@ -83,13 +89,10 @@ Change the system prompt. See code for the current default. It's really importan
 that your prompt tells chatGPT to wrap the code it returns in markdown code blocks.
 
 ```Javascript
-//some gpt4 generated javascript here
+//some gpt4 generated json javascript here
 ```
 
-In the default system prompt this is expressed as "You only return javascript
-code and you mark it as such by using markdown code blocks specifying the
-language" this seems to be fairly foolproof so it's suggested to keep it
-included
+maxGPT can parse json or javascript code blocks.
 
 ### temp
 
@@ -111,8 +114,11 @@ This is what is called by the repl when you hit option+enter
 
 ## TODO
 
-* things which seperate content from text should take the same object it outputs as input and allow them,
-to be chained to you can filter out everything, but where to store filtered?
+* need a shortcut to read a file into maxGPT so it can iterate it. ie
+    how do i change this to make the groove~ object loop
+cannot current read in a json or maxpatch into the repl, why?
+* display errors in some way
+* typescript and transpile
 * clearer message when api key is not set rather than script just crashing
 * dynamic resize of overlay text
 * auto prime chat-gpt when 3.5 is selected

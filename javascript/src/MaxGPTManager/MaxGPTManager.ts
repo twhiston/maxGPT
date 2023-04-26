@@ -27,9 +27,10 @@ export default class MaxGPTManager {
     return this._temperature;
   }
   private _systemPrompt: string;
-  private readonly defaultPrompt: string = `You are an artificial intelligence who has the job of generating max map patches. You create these in json format as .maxpat files. You print your output as compactly as possible. You always surround the patch code with markdown code block indicators with the json language specified. Patches should be in the following format:
+  private readonly defaultPrompt: string = `You are an expert artificial intelligence who has the job of generating max map patches. You create these in json format as .maxpat files. You print your output as compactly as possible. You always surround the patch code with markdown code block indicators with the json language specified. Patches should be in the following format:
 
-  {patcher : {fileversion : 1,appversion : {major : 8, minor : 5, revision : 4, architecture : x64, modernui : 1 },boxes : [ {box : { id : midiin,maxclass : newobj,numinlets : 1,numoutlets : 1,outlettype : [ int ],patching_rect : [ 20.0, 20.0, 50.0, 22.0 ],text : midiin}} ],lines : [ ]}}`;
+  {"patcher" : {"fileversion" : 1,"appversion" : {"major" : 8,"minor" : 5,"revision" : 4,"architecture" : "x64","modernui" : 1},"boxes" : [ {"box" : {"id" : "obj-4","maxclass" : "newobj","numinlets" : 1,"numoutlets" : 0,"patching_rect" : [ 146.0, 80.0, 47.0, 22.0 ],"text" : "midiout"}}, {"box" : 	{"id" : "obj-3","maxclass" : "newobj","numinlets" : 1,"numoutlets" : 1,"outlettype" : [ "int" ],"patching_rect" : [ 146.0, 21.0, 40.0, 22.0 ],"text" : "midiin"}}, 	{"box" : {"id" : "oscillator","maxclass" : "newobj","numinlets" : 2,"numoutlets" : 1,"outlettype" : [ "signal" ],"patching_rect" : [ 20.0, 20.0, 80.0, 22.0 ],"text" : "cycle~ 440"}}, {"box" : {"id" : "dac","maxclass" : "newobj","numinlets" : 2,"numoutlets" : 0,"patching_rect" : [ 20.0, 80.0, 50.0, 22.0 ],"text" : "dac~"}}],"lines" : [ {"patchline" : {"destination" : [ "obj-4", 0 ],"source" : [ "obj-3", 0 ]}}, {"patchline" : {"destination" : [ "dac", 0 ],"source" : [ "oscillator", 0 ]}}]}}
+`;
   public set systemprompt(p: string) {
     this._systemPrompt = p === "" ? this.defaultPrompt : p;
   }
@@ -45,7 +46,7 @@ export default class MaxGPTManager {
     //If this is running outside of max you might just have a key in your env anyway
     this.API_KEY = process.env.OPEN_AI_KEY || "";
     this.systemprompt = this.defaultPrompt;
-    this.temperature = 0.2;
+    this.temperature = 0.1;
   }
 
   private removeLastElementIfPatchers(path: string): string {

@@ -9,10 +9,11 @@ function TextElement(ANIM_NODE, NODE_CTX) {
 
 	this.UNIQ = Date.now();
 	this.bufferCapture = []
-	this.defaultStatusColor = [0., 1., 0., 0.]
+	this.defaultStatusColor = [0.262, 0.262, 0.262, 0.]
 
 	this.textAnim.anim = ANIM_NODE;
 	this.textAnim.position = [0.5, 0.75, 0];
+	this.textAnim.scale = [2, 2, 0];
 
 	this.textObject.drawto = NODE_CTX;
 	this.textObject.anim = this.textAnim.name;
@@ -116,10 +117,12 @@ function status(textBuf) {
 }
 
 var responseElement = new TextElement(ANIM_NODE, NODE_CTX);
-responseElement.textAnim.position = [-1.0, 0.45, 0];
-responseElement.defaultStatusColor = [1., 0., 0., 0.]
+responseElement.textAnim.position = [-1.4, 0.2, 0];
+responseElement.textAnim.scale = [1.5, 1.5, 0];
+responseElement.defaultStatusColor = [0.795, 0.795, 0.795, 1.]
 function response(textBuf) {
 	statusDecayTsk.cancel();
+	statusElement.draw("");
 	responseElement.draw(textBuf)
 }
 
@@ -127,5 +130,3 @@ function freebang() {
 	statusElement.free()
 	responseElement.free()
 }
-
-
