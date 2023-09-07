@@ -12,4 +12,5 @@
     "[handlebars]": {
         "editor.formatOnSave": false
     },
+    "GitHooks.hooksDirectory": "/Users/twhiston/Documents/Max 8/Packages/maxGPT/.git/hooks",
 }

@@ -5,3 +5,4 @@ javascript/.nyc_output
 .env
 javascript/node_modules
 javascript/coverage
+javascript/dist

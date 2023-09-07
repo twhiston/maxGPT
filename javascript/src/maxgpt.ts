@@ -1,4 +1,4 @@
-import maxGPT from './MaxGPTManager/MaxGPTManager';
+import maxGPT, { SupportedModels } from './MaxGPTManager/MaxGPTManager';
 import * as maxAPI from 'max-api-or-not';
 import * as path from 'path';
 
@@ -36,6 +36,16 @@ maxAPI.addHandler('prompt', async (prompt: string) => {
     maxAPI.post("Prompt set to:", mgpt.systemprompt)
 });
 
+maxAPI.addHandler('push-prompt', async () => {
+    if (mgpt.MODEL == 'gpt-3.5-turbo') {
+        mgpt.msgCache.clear();
+        askHandler(mgpt.systemprompt)
+        maxAPI.post("cleared cache, pushing prompt to model as priming message")
+    } else {
+        maxAPI.post("Model is not gpt-3.5-turbo, no need to push prompt")
+    }
+});
+
 maxAPI.addHandler('temp', async (temp: number) => {
     mgpt.temperature = temp;
     maxAPI.post("Set temperature to ", mgpt.temperature)
@@ -44,16 +54,24 @@ maxAPI.addHandler('temp', async (temp: number) => {
 
 maxAPI.addHandler('model', async (model: string) => {
     try {
-        mgpt.MODEL = model.toString()
+        mgpt.MODEL = <SupportedModels>model.toString()
     } catch (error) {
-        console.log(error)
+        console.error(error.toString())
     }
+});
+
+maxAPI.addHandler('log-model', async (model: string) => {
+    console.log(mgpt.MODEL)
 });
 
 
 // When node.script gets the symbol "text", the remainder will be passed to this function.
 // The "..." is the spread operator. All of the arguments to this function will go into args as an array.
 maxAPI.addHandler('ask', async (args) => {
+    askHandler(args);
+});
+
+function askHandler(args) {
     maxAPI.outlet("text", "status", "maxGPT asking question...")
     mgpt.ask(args).then((result) => {
         for (const res of result[0]) {
@@ -64,4 +82,5 @@ maxAPI.addHandler('ask', async (args) => {
         }
         maxAPI.outlet("text", "response", result[2])
     })
-});
+}
+askHandler.local = 1

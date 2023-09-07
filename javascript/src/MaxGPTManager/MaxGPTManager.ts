@@ -14,6 +14,8 @@ export type ProcessedText = {
   text: string;
 }
 
+export type SupportedModels = "gpt-4" | "gpt-3.5-turbo";
+
 export default class MaxGPTManager {
   private _API_KEY: string;
   private config: Configuration;
@@ -27,7 +29,7 @@ export default class MaxGPTManager {
     return this._temperature;
   }
   private _systemPrompt: string;
-  private readonly defaultPrompt: string = `You are an expert artificial intelligence who has the job of generating max map patches. You create these in json format as .maxpat files. You print your output as compactly as possible. You always surround the patch code with markdown code block indicators with the json language specified. Patches should be in the following format:
+  private readonly defaultPrompt: string = `You are an expert at generating max map patches. You create these in json format as .maxpat files. You print your output as compactly as possible. You always surround the patch code with markdown code block indicators with the json language specified. You always use ezdac~ instead of dac~.Patches should be in the following format:
 
   {"patcher" : {"fileversion" : 1,"appversion" : {"major" : 8,"minor" : 5,"revision" : 4,"architecture" : "x64","modernui" : 1},"boxes" : [ {"box" : {"id" : "obj-4","maxclass" : "newobj","numinlets" : 1,"numoutlets" : 0,"patching_rect" : [ 146.0, 80.0, 47.0, 22.0 ],"text" : "midiout"}}, {"box" : 	{"id" : "obj-3","maxclass" : "newobj","numinlets" : 1,"numoutlets" : 1,"outlettype" : [ "int" ],"patching_rect" : [ 146.0, 21.0, 40.0, 22.0 ],"text" : "midiin"}}, 	{"box" : {"id" : "oscillator","maxclass" : "newobj","numinlets" : 2,"numoutlets" : 1,"outlettype" : [ "signal" ],"patching_rect" : [ 20.0, 20.0, 80.0, 22.0 ],"text" : "cycle~ 440"}}, {"box" : {"id" : "dac","maxclass" : "newobj","numinlets" : 2,"numoutlets" : 0,"patching_rect" : [ 20.0, 80.0, 50.0, 22.0 ],"text" : "dac~"}}],"lines" : [ {"patchline" : {"destination" : [ "obj-4", 0 ],"source" : [ "obj-3", 0 ]}}, {"patchline" : {"destination" : [ "dac", 0 ],"source" : [ "oscillator", 0 ]}}]}}
 `;
@@ -37,7 +39,7 @@ export default class MaxGPTManager {
   public get systemprompt() {
     return this._systemPrompt;
   }
-  private _MODEL: string = "gpt-4";
+  private _MODEL: SupportedModels = "gpt-4";
   private FOLDER_SUFFIX = ".maxGPT";
   private _patchPath: string = "./";
   msgCache: OpenAIChatCache = new InMemoryCache();
@@ -46,7 +48,7 @@ export default class MaxGPTManager {
     //If this is running outside of max you might just have a key in your env anyway
     this.API_KEY = process.env.OPEN_AI_KEY || "";
     this.systemprompt = this.defaultPrompt;
-    this.temperature = 0.1;
+    this.temperature = 0.2;
   }
 
   private removeLastElementIfPatchers(path: string): string {
@@ -81,7 +83,7 @@ export default class MaxGPTManager {
       // Log the path to the .env file
       console.log(
         "Path to .env file:",
-        dotenvResult.parsed["DOTENV_CONFIG_PATH"]
+        this._patchPath
       );
     }
     //If the key is already set and there is not one in the env keep existing
@@ -99,10 +101,14 @@ export default class MaxGPTManager {
     });
   }
 
-  public set MODEL(v: string) {
+  public set MODEL(v: SupportedModels) {
     if (v !== "gpt-4" && v !== "gpt-3.5-turbo")
       throw new Error("Model must be gpt-4 or gpt-3.5-turbo");
     this._MODEL = v;
+    this.msgCache.clear();
+  }
+  public get MODEL(): SupportedModels {
+    return this._MODEL;
   }
 
   separateJSfromText(input: string): ProcessedText {

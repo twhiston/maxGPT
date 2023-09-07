@@ -1,11 +1,13 @@
 # maxGPT
 
-bring gpt4 inside max msp to help you write patches. You need a paid OpenAI api
+bring chat-gpt inside max msp to help you write patches. You need a paid OpenAI api
 account to use this, as it consumes their paid API. By default it is using GPT4,
 but you can switch it to gpt-3.5-turbo, however be aware that this uses a system
 prompt to try to tighten up the max code it returns and to give it in a format
 which this code can parse, 3.5 needs you to send this manually as the first
-message. If you experiment with changing the system prompt it is highly
+message. You can use the `push-prompt` message after you switch models to do this.
+You should wait for a response before continuing.
+If you experiment with changing the system prompt it is highly
 advisable to keep the line about returning code inside markdown code blocks.
 
 Note also that this is SLOW. We can't parse anything until the response is complete
@@ -14,7 +16,7 @@ it's not exactly a snappy experience!
 
 ## Requirements
 
-* You must have `tw.gl.repl` installed
+* You must have the `GLRepl` package installed
 * OpenAI Api Key
 * Preferably GPT4 Access
 
@@ -88,25 +90,39 @@ deletes all the data in the hot cache. Next message will be the start of a new c
 Change the system prompt. See code for the current default. It's really important
 that your prompt tells chatGPT to wrap the code it returns in markdown code blocks.
 
+```JSON
+//some gpt4 generated json javascript here
+```
+
 ```Javascript
 //some gpt4 generated json javascript here
 ```
 
-maxGPT can parse json or javascript code blocks.
+maxGPT can parse json or javascript code blocks but by default the prompt is telling
+it to return JSON responses, as this is more reliable than the javascript returned.
+That being said it is very possible to have maxGPT create patches from javascript code
+since handling for that is built into the parser. See `javascript/maxjs/maxGPTScriptParser.js`
 
 ### temp
 
 Set the temperature of the response. Higher numbers are more creative but
-probably less correct. Defaults to 0.1. Must be between 0.0 and 2.0
+probably less correct. Defaults to 0.2 Must be between 0.0 and 2.0
+
+### log-model
+
+write the currently active model to the max console window
 
 ### model
 
-Can be `gpt-4` or `gpt-3.5-turbo`. Defaults to `gpt-4`.
+Can be `gpt-4` or `gpt-3.5-turbo`. Defaults to `gpt-4`. GPT-3 does not use sytem
+prompts so you will need to manually prompt it before you start talking by using
+`push-prompt`.
 
-Although gpt-3 is selectable it's not tested or recommended. GPT-3 does not use
-sytem prompts so you will need to manaully prompt it before you start talking.
-It might not work well with the built in system prompt, so in the case of GPT-3
-you may need to manually prime it with the existing prompt.
+### push-prompt
+
+pushes the current prompt to the model as a question. This is needed for gpt-3.5-turbo
+as you cannot use a system prompt with this model. You should wait for it to return to
+continue using maxGPT.
 
 ### ask
 
@@ -114,11 +130,9 @@ This is what is called by the repl when you hit option+enter
 
 ## TODO
 
+* setup build stuff for package so maxgpt.js is found (root js folder in build)
 * need a shortcut to read a file into maxGPT so it can iterate it. ie
     how do i change this to make the groove~ object loop
 cannot current read in a json or maxpatch into the repl, why?
-* display errors in some way
-* typescript and transpile
 * clearer message when api key is not set rather than script just crashing
 * dynamic resize of overlay text
-* auto prime chat-gpt when 3.5 is selected
