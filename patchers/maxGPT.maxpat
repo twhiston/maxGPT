@@ -4,7 +4,7 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 5,
-			"revision" : 5,
+			"revision" : 6,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -143,7 +143,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 5,
-							"revision" : 5,
+							"revision" : 6,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -406,7 +406,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 5,
-							"revision" : 5,
+							"revision" : 6,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -835,8 +835,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 3,
 					"outlettype" : [ "jit_matrix", "bang", "" ],
-					"patching_rect" : [ 523.0, 102.0, 378.0, 22.0 ],
-					"text" : "jit.world maxGPT @fsaa 1 @fsmenubar 0 @size 588 258 @floating 1"
+					"patching_rect" : [ 523.0, 102.0, 496.0, 22.0 ],
+					"text" : "jit.world maxGPT @fsaa 1 @fsmenubar 0 @size 588 258 @floating 1 @erase_color 0 0 0 1"
 				}
 
 			}
@@ -1060,8 +1060,6 @@
 					"saved_object_attributes" : 					{
 						"autostart" : 1,
 						"defer" : 0,
-						"node_bin_path" : "",
-						"npm_bin_path" : "",
 						"options" : [ "--inspect" ],
 						"watch" : 0
 					}
