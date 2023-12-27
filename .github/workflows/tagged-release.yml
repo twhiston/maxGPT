@@ -19,7 +19,7 @@ jobs:
       - name: 'Run tests'
         working-directory: ./javascript
         run: npm install && npx nyc ava
-      
+
       - name: 'compile'
         working-directory: ./javascript
         run: npm run compile
@@ -29,9 +29,9 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
           files: |
-            maxGPT.maxpat
+            patchers/maxGPT.maxpat
             README.md
-            _maxgpt-shortkeys.json
+            misc/_maxgpt-shortkeys.json
             javascript/dist/*
             javascript/maxjs
         id: "automatic_releases"
