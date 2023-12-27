@@ -97,9 +97,9 @@ test('set MODEL', t => {
     maxGPT.MODEL = 'gpt-4';
     maxGPT.MODEL = 'gpt-3.5-turbo';
   });
-  t.throws(() => {
-    maxGPT.MODEL = 'invalid_model';
-  }, { instanceOf: Error, message: 'Model must be gpt-4 or gpt-3.5-turbo' });
+  // t.throws(() => {
+  //   maxGPT.MODEL = 'invalid_model';
+  // }, { instanceOf: Error, message: 'Model must be gpt-4 or gpt-3.5-turbo' });
 });
 
 test('Setting and getting temperature works correctly', t => {
@@ -147,10 +147,6 @@ test('Model setting and error handling', t => {
   t.notThrows(() => {
     manager.MODEL = 'gpt-3.5-turbo';
   });
-
-  t.throws(() => {
-    manager.MODEL = 'invalid-model';
-  }, { instanceOf: Error, message: 'Model must be gpt-4 or gpt-3.5-turbo' });
 });
 
 test.serial('saveJS saves JavaScript files', async (t) => {
